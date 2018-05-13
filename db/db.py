@@ -1,7 +1,8 @@
 from sqlalchemy_aio import ASYNCIO_STRATEGY
-from sqlalchemy import Column, Integer, MetaData, Table, Text, create_engine, select
-from sqlalchemy.schema import CreateTable, DropTable
-from db.models import user_connections, Base
+from sqlalchemy import create_engine
+from sqlalchemy.schema import CreateTable
+from sqlalchemy.exc import OperationalError
+from db.models import user_connections
 
 
 class Database:
@@ -16,4 +17,7 @@ class Database:
         return db
 
     async def setup(self):
-        await self.engine.execute(CreateTable(user_connections))
+        try:
+            await self.engine.execute(CreateTable(user_connections))
+        except OperationalError as e:
+            pass

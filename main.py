@@ -16,7 +16,7 @@ class Main:
         self.log.info(f"Starting FireBot v{__version__}")
 
         self.log.debug("Initialising asyncio")
-        tasks = (self.start_db(), self.start_bot)
+        tasks = (self.start_db(), self.start_bot())
         self.init_asyncio(tasks)
 
     def init_asyncio(self, tasks):
@@ -30,7 +30,6 @@ class Main:
 
     async def start_bot(self):
         self.log.debug("Starting Discord Bot")
-
 
 
 if __name__ == "__main__":

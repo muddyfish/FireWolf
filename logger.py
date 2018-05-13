@@ -3,14 +3,6 @@ import logging
 import sys
 from traceback import print_tb
 
-_LOGGER_NAME = "FireWolf"
-
-
-class LogWriter:
-    _logger = logging.getLogger(_LOGGER_NAME)
-
-    def log(self, level:int, message:str) -> None:
-        self._logger.log(level, message)
 
 
 def _exception_handler(logger):
@@ -32,20 +24,27 @@ def initialise(level):
         fmt="%(asctime)s\t%(levelname)s\t%(message)s",
         datefmt="%Y-%m-%dT%H:%M:%SZ%z"
     )
+    exceptions = create_logger("fire_bot", formatter, level, True, True)
+    sys.excepthook = _exception_handler(exceptions)
+    create_logger("discord", formatter, level, True, True)
+    return exceptions
 
-    logger = logging.getLogger(_LOGGER_NAME)
+
+def create_logger(name, formatter, level, stream=False, file=False):
+    logger = logging.getLogger(name)
     logger.setLevel(level)
 
-    stream_handler = logging.StreamHandler()
-    file_handler = logging.FileHandler("fire_bot.log")
+    handlers = []
+    if stream:
+        handlers.append(logging.StreamHandler())
+    if file:
+        handlers.append(logging.FileHandler(f"{name}.log"))
 
-    for handler in (stream_handler, file_handler):
+    for handler in handlers:
         atexit.register(handler.close)
         handler.setLevel(level)
         handler.setFormatter(formatter)
 
         logger.addHandler(handler)
-
-    sys.excepthook = _exception_handler(logger)
 
     return logger
