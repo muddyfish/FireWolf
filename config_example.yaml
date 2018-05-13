@@ -1,0 +1,9 @@
+discord:
+  token: "bot_token"
+  secret: "bot_secret"
+web:
+  url: "127.0.0.1"
+  port: 7777
+db:
+  url: "127.0.0.1"
+logging_level: DEBUG
