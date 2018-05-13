@@ -1,7 +1,7 @@
 sqlalchemy
 sqlalchemy_aio
 mysqlclient
-git://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
+git+git://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
 PyYAML
 aiohttp
 aiohttp-jinja2
