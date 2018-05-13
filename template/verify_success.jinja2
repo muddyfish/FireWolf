@@ -1,0 +1,13 @@
+{% extends 'template.jinja2' %}
+{% block title %}Success{% endblock %}
+{% block content %}
+    <div id="oauth2-authorize">
+        <div class="authorize-inner">
+            <div class="scroller-wrap dark">
+                <div class="scopes scroller fail-hide">
+                    <label>{{ text }}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

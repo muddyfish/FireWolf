@@ -27,6 +27,7 @@ def initialise(level):
     exceptions = create_logger("fire_bot", formatter, level, True, True)
     sys.excepthook = _exception_handler(exceptions)
     create_logger("discord", formatter, level, True, True)
+    create_logger("aiohttp.server", formatter, level, True, True)
     return exceptions
 
 

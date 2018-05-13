@@ -1,0 +1,380 @@
+html {
+    height: 100%;
+}
+
+body {
+    padding-top: 70px;
+    padding-bottom: 5%;
+    font-family: Whitney,Helvetica Neue,Helvetica,Arial,sans-serif;
+}
+
+.navbar-fixed-bottom {
+    height:5vh;
+    min-height: 30px;
+    background-image: url('{{ base_url }}/static/im/discord_logo.png');
+    background-position: left;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.full-size {
+    max-width:100%;
+    max-height:100%;
+}
+
+.header {
+    background-color: #23272A;
+    height: 5vh;
+    min-height: 30px;
+}
+
+.inline {
+    display: inline;
+}
+
+.no-shadow {
+    text-shadow: 0 0px 0 #fff;
+}
+
+.no-hover {
+    background-color: transparent !important;
+}
+
+select {
+    background-color: #23272A;
+    margin-bottom: 10px;
+}
+
+#oauth2-authorize {
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    align-items: center;
+    background-color: #282b30;
+    bottom: 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+#oauth2-authorize .authorize-inner {
+    -ms-flex-direction: column;
+    -webkit-box-direction: normal;
+    -webkit-box-orient: vertical;
+    -webkit-box-shadow: 0 1px 10px 0 rgba(0,0,0,.1);
+    background: #35383c;
+    border-radius: 5px;
+    box-shadow: 0 1px 10px 0 rgba(0,0,0,.1);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 500px;
+}
+
+#oauth2-authorize .authorize-inner header {
+    -ms-flex-align: center;
+    -webkit-box-align: center;
+    -webkit-box-shadow: 0 2px 8px 0 rgba(0,0,0,.06);
+    -webkit-box-sizing: border-box;
+    align-items: center;
+    background: #7289da;
+    border-radius: 5px 5px 0 0;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,.06);
+    box-sizing: border-box;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 140px;
+    padding: 24px;
+}
+
+#oauth2-authorize .authorize-inner header .application-name {
+    -ms-flex: 1;
+    -webkit-box-flex: 1;
+    flex: 1;
+    overflow: hidden;
+}
+
+#oauth2-authorize .authorize-inner header .application-name>:first-child {
+    color: hsla(0,0%,100%,.4);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 16px;
+    text-transform: uppercase;
+}
+
+#oauth2-authorize .authorize-inner header .application-name>:last-child {
+    color: #fff;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 56px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#oauth2-authorize .authorize-inner header .application-icon {
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    align-items: center;
+    background: hsla(0,0%,100%,.2);
+    border-radius: 46px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 92px;
+    justify-content: center;
+    margin-left: 30px;
+    width: 92px;
+}
+
+#oauth2-authorize .authorize-inner header .application-icon .application-icon-inner {
+    background: url(/assets/1afb8f8….png) 50% no-repeat;
+    background-size: 92px;
+    border-radius: 40px;
+    height: 80px;
+    width: 80px;
+}
+
+#oauth2-authorize .authorize-inner .scroller-wrap {
+    max-height: calc(100vh - 500px);
+}
+
+#oauth2-authorize .authorize-inner .scopes {
+    padding-bottom: 30px;
+    padding-left: 30px;
+    padding-top: 30px;
+}
+
+#oauth2-authorize .authorize-inner .scopes label {
+    color: hsla(0,0%,100%,.2);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 15px;
+    text-transform: uppercase;
+}
+
+#oauth2-authorize .authorize-inner .scopes .scope {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+#oauth2-authorize .authorize-inner .scopes .scope .scope-check {
+    -webkit-box-sizing: border-box;
+    background: hsla(0,0%,100%,.2);
+    border-radius: 18px;
+    box-sizing: border-box;
+    height: 36px;
+    margin-right: 20px;
+    margin-top: 14px;
+    padding: 2px;
+    width: 36px;
+}
+
+#oauth2-authorize .authorize-inner .scopes .scope .scope-check .scope-check-inner {
+    -webkit-box-sizing: border-box;
+    background-color: #747f8d;
+    background-image: url(https://discordapp.com/assets/eb7df431c75a876011cf8a271e42ef67.svg);
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: 17px 13px;
+    border: 2px solid #35383c;
+    border-radius: 16px;
+    box-sizing: border-box;
+    height: 32px;
+    width: 32px;
+}
+
+#oauth2-authorize .authorize-inner .scopes .scope.allow .scope-check-inner {
+    background-color: #43b581;
+    background-image: url(https://discordapp.com/assets/0dad6ae26c09abbd543809368519a210.svg);
+}
+
+#oauth2-authorize .authorize-inner .scopes .scope .scope-inner .scope-name {
+    color: #fff;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 22px;
+}
+#oauth2-authorize .authorize-inner .scopes .scope .scope-inner .scope-description {
+    color: hsla(0,0%,100%,.2);
+    font-size: 12px;
+    line-height: 15px;
+}
+#oauth2-authorize .authorize-inner .scopes .scope .scope-inner {
+    -ms-flex: 1;
+    -ms-flex-direction: column;
+    -ms-flex-pack: center;
+    -webkit-box-direction: normal;
+    -webkit-box-flex: 1;
+    -webkit-box-orient: vertical;
+    -webkit-box-pack: center;
+    -webkit-box-sizing: border-box;
+    border-bottom: 1px solid hsla(0,0%,100%,.1);
+    box-sizing: border-box;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 65px;
+    padding: 13px 0;
+}
+
+.checkbox {
+    -ms-flex-align: center;
+    -webkit-box-align: center;
+    align-items: center;
+    cursor: pointer;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.checkbox .checkbox-inner {
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    height: 18px;
+    position: relative;
+    vertical-align: top;
+    width: 18px;
+}
+
+.checkbox .checkbox-inner input[type=checkbox] {
+    display: none;
+}
+
+.checkbox .checkbox-inner input[type=checkbox]:checked+span {
+    background-color: #7289da;
+    border-color: #7289da;
+}
+.checkbox .checkbox-inner span {
+    -webkit-box-sizing: border-box;
+    -webkit-transition: .24s;
+    border: 2px solid #cdcdcd;
+    border-radius: 2px;
+    bottom: 0;
+    box-sizing: border-box;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .24s;
+}
+.checkbox .checkbox-inner+span {
+    margin-left: 8px;
+}
+
+.checkbox .checkbox-inner input[type=checkbox]:checked+span:after {
+    -webkit-transform: rotate(45deg);
+    border-color: #fff;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    content: "";
+    display: table;
+    height: 12px;
+    left: 4px;
+    position: absolute;
+    top: 0;
+    transform: rotate(45deg);
+    width: 4px;
+}
+
+.select {
+    position: relative;
+}
+
+select {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    -webkit-box-sizing: border-box;
+    appearance: none;
+    background: #35383c;
+    border: 2px solid hsla(0,0%,100%,.2);
+    border-radius: 3px;
+    box-sizing: border-box;
+    color: hsla(0,0%,100%,.2);
+    font-size: 16px;
+    line-height: 19px;
+    margin-top: 12px;
+    padding: 12px;
+    position: relative;
+    width: 100%;
+}
+
+.select:after {
+    border: 6px solid transparent;
+    border-top: 6px solid hsla(0,0%,100%,.2);
+    content: " ";
+    height: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 0;
+}
+option {
+    font-weight: normal;
+    display: block;
+    white-space: pre;
+    min-height: 1.2em;
+    padding: 0px 2px 1px;
+}
+select:active, select:focus {
+    border-color: #7289da;
+    outline: none;
+}
+select {
+    color: #fff;
+}
+
+#oauth2-authorize .authorize-inner footer {
+    border-radius: 0 0 5px 5px;
+    padding: 20px;
+    text-align: right;
+}
+
+#oauth2-authorize .authorize-inner footer button.primary {
+    background: #7289da;
+    border-radius: 3px;
+    padding: 8px 21px;
+}
+
+#oauth2-authorize .authorize-inner footer button+button {
+    margin-left: 14px;
+}
+
+#oauth2-authorize .authorize-inner footer button {
+    background: none;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 19px;
+    padding: 0;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+    font-family: Whitney,Helvetica Neue,Helvetica,Arial,sans-serif;
+}
+
+.invalid {
+    color: #f04747;
+    display: none;
+}
+
+.fail-show {
+    display: none;
+}

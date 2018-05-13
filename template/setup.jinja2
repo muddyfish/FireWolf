@@ -1,0 +1,112 @@
+{% extends 'template.jinja2' %}
+{% macro role_picker() %}
+    <select id="role_picker"  placeholder="Roles">
+        <option value="">Select a role</option>
+        <option disabled="">---------------</option>
+        {% for role in guild.roles | sort(attribute="position", reverse=True) | selectattr("position", "greaterthan", 0) %}
+            <option value="{{ role.id }}">{{ role.name |e}}</option>
+        {% endfor %}
+    </select>
+{% endmacro %}
+{% block title %}Setup your server{% endblock %}
+{% block content %}
+    <div id="oauth2-authorize">
+        <div class="authorize-inner">
+            <header>
+                <div class="application-name">
+                    <div>Connect to Discord</div>
+                    <div>FireWolf</div>
+                </div>
+                <div class="application-icon">
+                    <div class="application-icon-inner" style="background-image: url(&quot;https://cdn.discordapp.com/app-icons/445159466992795660/4a5fd089c8511b92a93eba17225e5877.png?size=128&quot;);"></div>
+                </div>
+            </header>
+            <div class="scroller-wrap dark">
+                <div class="scopes scroller fail-hide">
+                    <label>FireWolf will</label>
+                    <div class="scope allow">
+                        <div class="scope-check">
+                            <div class="scope-check-inner"></div>
+                        </div>
+                        <div class="scope-inner">
+                            <div class="scope-name">Add basic authentication to gain access</div>
+                            <div class="scope-description">
+                                Two channels will be added: <strong>Gateway</strong> and <strong>FireWolf-Logs</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scope allow">
+                        <div class="scope-check">
+                            <div class="scope-check-inner"></div>
+                        </div>
+                        <div class="scope-inner">
+                            <div class="scope-name">Either add or remove a role from users</div>
+                            <div class="scope-description" id="checkboxes">
+                                We'll either:
+                                <div>
+                                    <div class="checkbox">
+                                        <div class="checkbox-inner">
+                                            <input id="add-on-auth" type="checkbox" checked>
+                                            <span></span>
+                                        </div>
+                                        <span>Add a role when they authenticate</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="checkbox">
+                                        <div class="checkbox-inner">
+                                            <input type="checkbox">
+                                            <span></span>
+                                        </div>
+                                        <span>Add a role when they join the server and then remove it when they've authenticated.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="invalid">Please select a role</div>
+                            <div class="select">
+                                {{ role_picker() }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="scopes scroller fail-show">
+
+                </div>
+            </div>
+            <footer class="fail-hide">
+                <button type="button" class="primary" id="authorize">Authorize</button>
+            </footer>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function(){
+            $(".checkbox").click(function() {
+                $(":checkbox").prop("checked", false)
+                $(this).find("input").prop("checked", true);
+            });
+
+            $("#authorize").click(function () {
+                var role_id = $("#role_picker :selected").val();
+                if (role_id === "") {
+                    $(".invalid").fadeIn()
+                    return
+                }
+                var add_on_authenticate = $("#add-on-auth").prop("checked");
+
+                var data = {role_id: role_id,
+                            add_on_authenticate: add_on_authenticate
+                }
+                console.log(data);
+                $.post("", data).always(function (data) {
+                    console.log(data);
+                    $(".fail-hide").slideUp(function () {
+                        $(".fail-show").slideDown();
+                        $(".fail-show").html(data);
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}
