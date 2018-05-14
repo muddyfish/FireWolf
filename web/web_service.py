@@ -86,14 +86,16 @@ class WebService:
             await self.bot.db.add_connections(member, connections)
             return aiohttp_jinja2.render_template("verify_success.jinja2",
                                                   request,
-                                                  {"text": "Success - You may now close the tab"})
+                                                  {"text": "Success - You may now close the tab",
+                                                   "base_url": self.url})
         else:
             log_channel_id = await self.bot.db.get_log_channel(member.guild.id)
             log_channel = self.bot.get_channel(log_channel_id)
             await log_channel.send(f"{member} already has one of their integrations used")
             return aiohttp_jinja2.render_template("verify_success.jinja2",
                                                   request,
-                                                  {"text": "Failure - One of your connections has already been used"})
+                                                  {"text": "Failure - One of your connections has already been used",
+                                                   "base_url": self.url})
 
     async def handle_edit(self, request):
         member = await self.get_member(request)

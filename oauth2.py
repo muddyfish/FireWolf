@@ -16,9 +16,10 @@ class Oauth2:
             'client_secret': self.client_secret,
             'grant_type': 'refresh_token',
             'refresh_token': refresh_token,
-            'redirect_uri': self.redirect_uri
+            'redirect_uri': self.redirect_uri+"setup"
         }
         async with aiohttp.ClientSession() as session:
+            print(data)
             async with session.post("https://discordapp.com/api/v6/oauth2/token",
                                                 data=data,
                                                 headers={"Content-Type": "application/x-www-form-urlencoded"}) as res:
