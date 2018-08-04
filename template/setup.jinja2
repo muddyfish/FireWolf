@@ -44,7 +44,7 @@
                             <div class="scope-description" id="checkboxes">
                                 We'll either:
                                 <div>
-                                    <div class="checkbox">
+                                    <div class="checkbox radio-checkbox">
                                         <div class="checkbox-inner">
                                             <input id="add-on-auth" type="checkbox" checked>
                                             <span></span>
@@ -53,7 +53,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="checkbox">
+                                    <div class="checkbox radio-checkbox">
                                         <div class="checkbox-inner">
                                             <input type="checkbox">
                                             <span></span>
@@ -68,6 +68,25 @@
                             </div>
                         </div>
                     </div>
+                    <div class="scope allow">
+                        <div class="scope-check">
+                            <div class="scope-check-inner"></div>
+                        </div>
+                        <div class="scope-inner">
+                            <div class="scope-name">Require a non-limited Steam account</div>
+                            <div class="scope-description" id="checkboxes">
+                                <div>
+                                    <div class="checkbox">
+                                        <div class="checkbox-inner">
+                                            <input type="checkbox" id="require-steam">
+                                            <span></span>
+                                        </div>
+                                        <span>Require the user to have a <a href="https://support.steampowered.com/kb_article.php?ref=3330-IAGK-7663">non-limited Steam account</a> as a connection</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
                 </div>
                 <div class="scopes scroller fail-show">
 
@@ -82,9 +101,12 @@
 {% block script %}
     <script>
         $(document).ready(function(){
-            $(".checkbox").click(function() {
-                $(":checkbox").prop("checked", false)
+            $(".radio-checkbox").click(function() {
+                $(".radio-checkbox").find("input").prop("checked", false)
                 $(this).find("input").prop("checked", true);
+            });
+            $(".checkbox:not(.radio-checkbox)").click(function() {
+                $(this).find("input").prop("checked", !$(this).find("input").prop("checked"));
             });
 
             $("#authorize").click(function () {
@@ -94,9 +116,11 @@
                     return
                 }
                 var add_on_authenticate = $("#add-on-auth").prop("checked");
+                var require_steam = $("#require-steam").prop("checked");
 
                 var data = {role_id: role_id,
-                            add_on_authenticate: add_on_authenticate
+                            add_on_authenticate: add_on_authenticate,
+                            require_steam: require_steam
                 }
                 console.log(data);
                 $.post("", data).always(function (data) {

@@ -23,17 +23,21 @@ class Database:
         await self.engine.execute(stmt)
 
     async def get_guild_settings(self, guild_id):
-        stmt = text("SELECT role_id, add_on_authenticate FROM guild_data where guild_id=:guild_id;")
+        stmt = text("SELECT role_id, add_on_authenticate, require_steam FROM guild_data where guild_id=:guild_id;")
         res = await self.engine.execute(stmt, guild_id=guild_id)
         res = await res.fetchone()
         if res is None:
-            return None, None
-        role_id, add_on_authenticate = res
-        return role_id, add_on_authenticate
+            return None, None, None
+        role_id, add_on_authenticate, require_steam = res
+        return role_id, add_on_authenticate, require_steam
 
-    async def set_guild_settings(self, guild_id, role_id, add_on_authenticate):
-        stmt = text("UPDATE guild_data SET role_id=:role_id, add_on_authenticate=:add_on_authenticate WHERE guild_id=:guild_id")
-        await self.engine.execute(stmt, guild_id=guild_id, role_id=role_id, add_on_authenticate=add_on_authenticate)
+    async def set_guild_settings(self, guild_id, role_id, add_on_authenticate, require_steam):
+        stmt = text("UPDATE guild_data SET role_id=:role_id, add_on_authenticate=:add_on_authenticate, require_steam=:require_steam WHERE guild_id=:guild_id")
+        await self.engine.execute(stmt,
+                                  guild_id=guild_id,
+                                  role_id=role_id,
+                                  add_on_authenticate=add_on_authenticate,
+                                  require_steam=require_steam)
 
     async def get_log_channel(self, guild_id):
         stmt = text("SELECT log_id FROM guild_data where guild_id=:guild_id;")

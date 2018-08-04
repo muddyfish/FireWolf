@@ -16,7 +16,7 @@ class Oauth2:
             'client_secret': self.client_secret,
             'grant_type': 'refresh_token',
             'refresh_token': refresh_token,
-            'redirect_uri': self.redirect_uri+"setup"
+            'redirect_uri': self.redirect_uri+"verify"
         }
         async with aiohttp.ClientSession() as session:
             print(data)

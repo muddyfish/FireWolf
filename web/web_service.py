@@ -1,17 +1,21 @@
 import aiohttp_jinja2
 from jinja2 import FileSystemLoader
+import aiohttp
 from aiohttp import web
 import asyncio
 from discord.http import Route
 import discord
+import bs4
 
 from bot import create_channels, verify_member
+
 
 class WebService:
     def __init__(self, bot, oauth, web_config):
         self.bot = bot
         self.oauth = oauth
         self.url = web_config["url"]
+        self.bot.url = self.url
         self.loop = asyncio.get_event_loop()
 
         self.app = web.Application()
@@ -79,9 +83,19 @@ class WebService:
                                                   {"text": "Failure - You have no verified connections. "
                                                            "Add one and try again"})
         if await self.is_allowed_in(guild_id, connections):
-            role_id, add_on_authenticate = await self.bot.db.get_guild_settings(guild_id)
+            role_id, add_on_authenticate, require_steam = await self.bot.db.get_guild_settings(guild_id)
             if None in (role_id, add_on_authenticate):
-                return web.Response(status=400, text="This guild hasn't been set up")
+                return aiohttp_jinja2.render_template("verify_success.jinja2",
+                                                      request,
+                                                      {"text": "Failure - This server hasn't been set up yet",
+                                                       "base_url": self.url})
+            if require_steam:
+                if not await self.verify_steam(connections):
+                    return aiohttp_jinja2.render_template("verify_success.jinja2",
+                                                          request,
+                                                          {"text": "Failure - Your Steam account either isn't connected to Discord "
+                                                                   ' <a href="https://support.steampowered.com/kb_article.php?ref=3330-IAGK-7663">or is limited</a>',
+                                                           "base_url": self.url})
             await verify_member(member, role_id, add_on_authenticate, connections)
             await self.bot.db.add_connections(member, connections)
             return aiohttp_jinja2.render_template("verify_success.jinja2",
@@ -114,11 +128,12 @@ class WebService:
             return web.Response(text="Cannot manage this guild")
         args = request.query
         if "setup" in args:
-            await create_channels(member.guild, self.url)
+            await create_channels(member.guild)
         post = await request.post()
         role_id = int(post["role_id"])
         add_on_authenticate = post["add_on_authenticate"] == "true"
-        await self.bot.db.set_guild_settings(member.guild.id, role_id, add_on_authenticate)
+        require_steam = post["require_steam"] == "true"
+        await self.bot.db.set_guild_settings(member.guild.id, role_id, add_on_authenticate, require_steam)
         log_channel_id = await self.bot.db.get_log_channel(member.guild.id)
         log_channel = self.bot.get_channel(log_channel_id)
         role = discord.utils.get(member.guild.roles, id=role_id)
@@ -162,3 +177,17 @@ class WebService:
             if (connection["type"], connection["id"]) in used_connections:
                 return False
         return True
+
+    async def verify_steam(self, connections):
+        steam_connection = next((conn for conn in connections if conn["type"] == "steam"), None)
+        if steam_connection is None:
+            return False
+        if not steam_connection["verified"]:
+            return False
+        steam_id = steam_connection["id"]
+        profile_url = f"https://steamcommunity.com/profiles/{steam_id}/?xml=1"
+        async with aiohttp.ClientSession() as session:
+            profile_data_text = await (await session.get(profile_url)).text()
+        profile_data = bs4.BeautifulSoup(profile_data_text, features="html.parser")
+        is_limited = int(profile_data.profile.islimitedaccount.text)
+        return not is_limited

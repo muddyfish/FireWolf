@@ -35,3 +35,4 @@ class GuildData(Base):
     log_id = Column(Integer)
     role_id = Column(Integer)
     add_on_authenticate = Column(Boolean)
+    require_steam = Column(Boolean)

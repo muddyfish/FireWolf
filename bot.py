@@ -27,7 +27,7 @@ async def create_channels(guild, url):
                   description="To enter this server, you'll need to first share your integrations.\n"
                               "To get in, you'll need to have at least one verified integration that hasn't been used by anyone else in the server.\n"
                               "\n"
-                             f"[Verify here]({url}/verify?guild_id={guild.id})")
+                             f"[Verify here]({bot.url}/verify?guild_id={guild.id})")
     await gateway.send(content=None, embed=embed)
     guild_info = GuildData(guild_id=guild.id,
                            log_id=logs.id)
@@ -67,6 +67,7 @@ async def on_member_join(member):
         role = discord.utils.get(member.guild.roles, id=role_id)
         await member.add_roles(role, reason="FireWolf auto role")
 
+
 @bot.command()
-async def create(ctx):
-    await create_channels(ctx.guild, "http://127.0.0.1:7788")
+async def settings(ctx):
+    await ctx.channel.send(f"{bot.url}/edit_server?guild_id={ctx.guild.id}")
