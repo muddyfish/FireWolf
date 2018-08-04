@@ -174,7 +174,7 @@ class WebService:
     async def is_allowed_in(self, guild_id, connections):
         used_connections = await self.bot.db.get_connections(guild_id)
         for connection in connections:
-            if (connection["type"], connection["id"]) in used_connections:
+            if self.bot.db.calculate_hash(connection) in used_connections:
                 return False
         return True
 

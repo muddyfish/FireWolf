@@ -2,6 +2,7 @@ from sqlalchemy_aio import ASYNCIO_STRATEGY
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from db.models import UserConnections
+import hashlib
 
 class Null:
     def __repr__(self):
@@ -48,12 +49,13 @@ class Database:
     async def add_connections(self, member, connections):
         for connection in connections:
             db_row = UserConnections(guild_id=member.guild.id,
-                                     discord_user_id=member.id,
-                                     connection_type=connection["type"],
-                                     connection_user_id=connection["id"])
+                                     connection_hash=self.calculate_hash(connection))
             await self.insert(db_row)
 
     async def get_connections(self, guild_id):
-        stmt = text("SELECT connection_type, connection_user_id FROM user_connections where guild_id=:guild_id;")
+        stmt = text("SELECT connection_hash FROM user_connections where guild_id=:guild_id;")
         res = await self.engine.execute(stmt, guild_id=guild_id)
-        return await res.fetchall()
+        return [i[0] for i in await res.fetchall()]
+
+    def calculate_hash(self, conn):
+        return hashlib.sha3_256(f"service id: {conn['type']}\nuser id: {conn['id']}".encode()).hexdigest()

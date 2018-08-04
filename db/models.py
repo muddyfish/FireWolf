@@ -23,9 +23,7 @@ class UserConnections(Base):
     __tablename__ = "user_connections"
     id = Column(Integer, primary_key=True)
     guild_id = Column(Integer)
-    discord_user_id = Column(Integer)
-    connection_user_id = Column(Text)
-    connection_type = Column(Text)
+    connection_hash = Column(Text)
 
 
 class GuildData(Base):
