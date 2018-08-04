@@ -96,7 +96,20 @@ class WebService:
                                                           {"text": "Failure - Your Steam account either isn't connected to Discord "
                                                                    ' <a href="https://support.steampowered.com/kb_article.php?ref=3330-IAGK-7663">or is limited</a>',
                                                            "base_url": self.url})
-            await verify_member(member, role_id, add_on_authenticate, connections)
+            try:
+                verified = await verify_member(member, role_id, add_on_authenticate, connections)
+            except discord.errors.Forbidden:
+                return aiohttp_jinja2.render_template("verify_success.jinja2",
+                                                      request,
+                                                      {"text": "Failure - The bot isn't set up properly on the server.<br/>"
+                                                               "DM an admin and ask them to fix it (cannot message logging channel)",
+                                                       "base_url": self.url})
+            if not verified:
+                return aiohttp_jinja2.render_template("verify_success.jinja2",
+                                                      request,
+                                                      {"text": "Failure - The bot isn't set up properly on the server.<br/>"
+                                                               "DM an admin and ask them to fix it (no permission to give role)",
+                                                       "base_url": self.url})
             await self.bot.db.add_connections(member, connections)
             return aiohttp_jinja2.render_template("verify_success.jinja2",
                                                   request,
