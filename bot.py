@@ -80,6 +80,6 @@ async def invite_me(ctx):
     params = urllib.parse.urlencode({"client_id": bot.user.id,
                                      "permissions": 268454928,
                                      "redirect_uri": f"{bot.url}/setup",
-                                     "scope": "bot",
+                                     "scope": "bot identify",
                                      "response_type": "code"})
     await ctx.channel.send(f"https://discordapp.com/api/oauth2/authorize?{params}")

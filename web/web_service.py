@@ -128,8 +128,20 @@ class WebService:
         member = await self.get_member(request)
         perms = member.guild_permissions
         if not perms.manage_guild:
-            return web.Response(text="Cannot manage this guild")
+            return aiohttp_jinja2.render_template("verify_success.jinja2",
+                                                  request,
+                                                  {"text": "Failure - You cannot manage this guild",
+                                                   "base_url": self.url})
 
+        member = member.guild.get_member(self.bot.user.id)
+        perms = member.guild_permissions
+        if not (perms.administrator or (perms.manage_roles and perms.manage_channels and
+                                        perms.read_messages and perms.send_messages and
+                                        perms.embed_links)):
+            return aiohttp_jinja2.render_template("verify_success.jinja2",
+                                                  request,
+                                                  {"text": "Failure - Bot doesn't have required permissions",
+                                                   "base_url": self.url})
         context = {"guild": member.guild,
                    "base_url": self.url}
         return aiohttp_jinja2.render_template("setup.jinja2", request, context)
