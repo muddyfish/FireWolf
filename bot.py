@@ -80,7 +80,7 @@ async def on_member_join(member):
 @bot.listen("on_guild_join")
 @bot.listen("on_guild_remove")
 async def update_status(*args, **kwargs):
-    await bot.change_presence(activity=Activity(name=f"{len(bot.guilds)} servers", type=ActivityType.watching))
+    await bot.change_presence(activity=Activity(name=f"{len(bot.guilds)} servers and {len(bot.users)} users", type=ActivityType.watching))
     if bot.dbl:
         await bot.dbl.post_server_count()
 
