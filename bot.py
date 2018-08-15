@@ -2,6 +2,7 @@ from discord.ext.commands import Bot
 from discord.activity import Activity, ActivityType
 from discord import Embed
 import discord
+import dbl
 from db.models import GuildData
 import asyncio
 import urllib.parse
@@ -15,6 +16,12 @@ async def initialise(config, db):
     asyncio.ensure_future(bot.connect(reconnect=True))
     await bot.wait_until_ready()
     bot.db = db
+    if config.get("dbl_token", ""):
+        bot.dbl = dbl.Client(bot, config["dbl_token"])
+        bot.dbl.bot_id = bot.user.id
+        await bot.dbl.post_server_count()
+    else:
+        bot.dbl = None
     await update_status()
     return bot
 
@@ -74,6 +81,8 @@ async def on_member_join(member):
 @bot.listen("on_guild_remove")
 async def update_status(*args, **kwargs):
     await bot.change_presence(activity=Activity(name=f"{len(bot.guilds)} servers", type=ActivityType.watching))
+    if bot.dbl:
+        await bot.dbl.post_server_count()
 
 
 @bot.command()

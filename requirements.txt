@@ -5,3 +5,4 @@ git+git://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
 PyYAML
 aiohttp
 aiohttp-jinja2
+dblpy
