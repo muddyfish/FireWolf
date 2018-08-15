@@ -1,5 +1,5 @@
 from discord.ext.commands import Bot
-from discord.activity import Game
+from discord.activity import Activity, ActivityType
 from discord import Embed
 import discord
 from db.models import GuildData
@@ -7,8 +7,7 @@ import asyncio
 import urllib.parse
 
 bot = Bot(command_prefix="!",
-          description="A bot to let you block out trolls with ease",
-          activity=Game("meeping"))
+          description="A bot to let you block out trolls with ease")
 
 
 async def initialise(config, db):
@@ -16,6 +15,7 @@ async def initialise(config, db):
     asyncio.ensure_future(bot.connect(reconnect=True))
     await bot.wait_until_ready()
     bot.db = db
+    await update_status()
     return bot
 
 
@@ -68,6 +68,12 @@ async def on_member_join(member):
     if not add_on_authenticate:
         role = discord.utils.get(member.guild.roles, id=role_id)
         await member.add_roles(role, reason="FireWolf auto role")
+
+
+@bot.listen("on_guild_join")
+@bot.listen("on_guild_remove")
+async def update_status(*args, **kwargs):
+    await bot.change_presence(activity=Activity(name=f"{len(bot.guilds)} servers", type=ActivityType.watching))
 
 
 @bot.command()
