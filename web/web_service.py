@@ -10,6 +10,10 @@ import bs4
 from bot import create_channels, verify_member
 
 
+class NotLoggedIn(Exception):
+    pass
+
+
 class WebService:
     def __init__(self, bot, oauth, web_config):
         self.bot = bot
@@ -35,14 +39,21 @@ class WebService:
         asyncio.ensure_future(self.web_server)
         asyncio.ensure_future(self.app.startup())
 
+    async def exchange_code(self, code, uri):
+        token = await self.oauth.exchange_token(code, uri=uri)
+        print(token)
+        if "error" in token:
+            raise web.HTTPBadRequest(text=token["error"])
+        if token["scope"] != "identify connections":
+            raise web.HTTPBadRequest(text="Invalid scope")
+        return token
+
     async def handle_setup_server(self, request):
         args = request.query
         code = args.get("code", None)
         if code is None:
             return web.Response(status=400, text="No code")
-        token = await self.oauth.exchange_token(code, uri="setup")
-        if "error" in token:
-            return web.Response(status=400, text=token["error"])
+        token = await self.exchange_code(code, "setup")
         guild_id = token["guild"]["id"]
         assert guild_id == args["guild_id"]
         response = web.HTTPFound(f"edit_server?guild_id={guild_id}&setup=1")
@@ -61,11 +72,7 @@ class WebService:
             response = web.HTTPFound(f"https://discordapp.com/oauth2/authorize?client_id={client_id}&redirect_uri={uri}&response_type=code&scope=identify%20connections")
             response.cookies["guild_id"] = args["guild_id"]
             return response
-        token = await self.oauth.exchange_token(code, uri="verify")
-        if "error" in token:
-            return web.Response(status=400, text=token["error"])
-        if token["scope"] != "identify connections":
-            return web.Response(status=400, text="Invalid scope")
+        token = await self.exchange_code(code, "verify")
         response = web.HTTPFound("verify_success")
         response.cookies["access_token"] = token["access_token"]
         response.cookies["refresh_token"] = token["refresh_token"]
@@ -125,7 +132,21 @@ class WebService:
                                                    "base_url": self.url})
 
     async def handle_edit(self, request):
-        member = await self.get_member(request)
+        code = request.query.get("code", None)
+        if code is not None:
+            token = await self.exchange_code(code, "edit_server")
+            response = web.HTTPFound(f"edit_server?guild_id={int(request.cookies['guild_id'])}")
+            response.cookies["access_token"] = token["access_token"]
+            response.cookies["refresh_token"] = token["refresh_token"]
+            return response
+        try:
+            member = await self.get_member(request)
+        except NotLoggedIn:
+            client_id = self.bot.user.id
+            uri = self.url + "/edit_server"
+            response = web.HTTPFound(f"https://discordapp.com/oauth2/authorize?client_id={client_id}&redirect_uri={uri}&response_type=code&scope=identify%20connections")
+            response.cookies["guild_id"] = int(request.query["guild_id"])
+            return response
         perms = member.guild_permissions
         if not perms.manage_guild:
             return aiohttp_jinja2.render_template("verify_success.jinja2",
@@ -144,7 +165,8 @@ class WebService:
                                                    "base_url": self.url})
         context = {"guild": member.guild,
                    "base_url": self.url}
-        return aiohttp_jinja2.render_template("setup.jinja2", request, context)
+        rtn = aiohttp_jinja2.render_template("setup.jinja2", request, context)
+        return rtn
 
     async def handle_edit_post(self, request):
         member = await self.get_member(request)
@@ -169,8 +191,11 @@ class WebService:
         return web.Response(text="Success.<br>You may now close this tab")
 
     async def get_member(self, request, guild_id=None):
-        access = request.cookies["access_token"]
-        refresh = request.cookies["refresh_token"]
+        try:
+            access = request.cookies["access_token"]
+            refresh = request.cookies["refresh_token"]
+        except KeyError:
+            raise NotLoggedIn()
         async with self.oauth.get_oauth2_http(access, refresh) as http:
             user_info = await http.get_user_info("@me")
             user_id = int(user_info["id"])

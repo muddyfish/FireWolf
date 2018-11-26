@@ -19,7 +19,6 @@ class Oauth2:
             'redirect_uri': self.redirect_uri+"verify"
         }
         async with aiohttp.ClientSession() as session:
-            print(data)
             async with session.post("https://discordapp.com/api/v6/oauth2/token",
                                                 data=data,
                                                 headers={"Content-Type": "application/x-www-form-urlencoded"}) as res:
