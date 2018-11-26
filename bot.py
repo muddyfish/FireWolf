@@ -8,7 +8,8 @@ import asyncio
 import urllib.parse
 
 bot = Bot(command_prefix="!",
-          description="A bot to let you block out trolls with ease")
+          description="A bot to let you block out trolls with ease",
+          request_offline_members=True)
 
 
 async def initialise(config, db):
@@ -80,7 +81,13 @@ async def on_member_join(member):
 @bot.listen("on_guild_join")
 @bot.listen("on_guild_remove")
 async def update_status(*args, **kwargs):
-    await bot.change_presence(activity=Activity(name=f"{len(bot.guilds)} servers and {len(bot.users)} users", type=ActivityType.watching))
+    no_users = 0
+    for guild in bot.guilds:
+        if guild.id == 264445053596991498:
+            continue
+        no_users += len(guild.members)
+    await bot.change_presence(activity=Activity(name=f"{len(bot.guilds)} servers and {no_users} users",
+                                                type=ActivityType.watching))
     if bot.dbl:
         await bot.dbl.post_server_count()
 
