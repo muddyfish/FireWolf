@@ -54,8 +54,11 @@ async def verify_member(member, role_id, add_on_authenticate, connections):
         else:
             await member.remove_roles(role, reason="Verified")
     except discord.errors.Forbidden:
-        await log_channel.send(f"Bot doesn't have permission to {'give' if add_on_authenticate else 'take'} {role.name} {'to' if add_on_authenticate else 'from'} {member}")
+        if log_channel:
+            await log_channel.send(f"Bot doesn't have permission to {'give' if add_on_authenticate else 'take'} {role.name} {'to' if add_on_authenticate else 'from'} {member}")
         return False
+    if not log_channel:
+        return True
     embed = Embed(title=str(member),
                   description="Has been verified",
                   colour=0xf04747)
