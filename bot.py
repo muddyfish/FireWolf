@@ -3,20 +3,24 @@ from discord.activity import Activity, ActivityType
 from discord import Embed
 import discord
 import dbl
+import aiohttp
+import bs4
 from db.models import GuildData
 import asyncio
 import urllib.parse
+import datetime
 
 bot = Bot(command_prefix="!",
           description="A bot to let you block out trolls with ease",
           request_offline_members=True)
 
 
-async def initialise(config, db):
+async def initialise(config, steam_api_key, db):
     await bot.login(token=config["token"], bot=True)
     asyncio.ensure_future(bot.connect(reconnect=True))
     await bot.wait_until_ready()
     bot.db = db
+    bot.steam_api_key = steam_api_key
     if config.get("dbl_token", ""):
         bot.dbl = dbl.Client(bot, config["dbl_token"])
         bot.dbl.bot_id = bot.user.id
@@ -108,3 +112,40 @@ async def invite_me(ctx):
                                      "scope": "bot identify",
                                      "response_type": "code"})
     await ctx.channel.send(f"https://discordapp.com/api/oauth2/authorize?{params}")
+
+
+@bot.command()
+async def steam_profile(ctx, steam_id: int):
+    steam_key = ctx.bot.steam_api_key
+    xml_profile_url = f"https://steamcommunity.com/profiles/{steam_id}/?xml=1"
+    json_profile_url = f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/"
+    async with aiohttp.ClientSession() as session:
+        profile_data = bs4.BeautifulSoup(await (await session.get(xml_profile_url)).text(), features="html.parser")
+        alt_profile_data = await (await session.get(json_profile_url,
+                                                    params={"key": steam_key, "steamids": steam_id})).json()
+    error = profile_data.find("error")
+    if error:
+        return await ctx.send(f"Steam error: {error.text}")
+    alt_profile_data = alt_profile_data["response"]["players"][0]
+
+    description = [profile_data.profile.onlinestate.text]
+    if int(profile_data.profile.vacbanned.text): description.append("VAC Banned")
+    trade_ban_state = profile_data.profile.tradebanstate.text
+    if trade_ban_state != "None": description.append(f"Trade ban: {trade_ban_state}")
+    embed = Embed(title=alt_profile_data["personaname"],
+                  colour=0xf04747,
+                  description="\n".join(description))
+    embed.set_thumbnail(url=alt_profile_data["avatarfull"])
+    embed.add_field(name="Steam ID", value=alt_profile_data["steamid"])
+    last_logoff = datetime.datetime.fromtimestamp(alt_profile_data["lastlogoff"])
+    if profile_data.profile.realname and profile_data.profile.realname.text.strip():
+        embed.add_field(name="Name", value=profile_data.profile.realname.text)
+    if profile_data.profile.summary and profile_data.profile.summary.text.strip():
+        embed.add_field(name="Summary", value=profile_data.profile.summary.text)
+    embed.add_field(name="Last seen", value=last_logoff.strftime("%d %B %Y at %I:%M %p (UTC+0)"))
+    if profile_data.profile.membersince:
+        embed.add_field(name="Member since", value=profile_data.profile.membersince.text)
+    if profile_data.profile.location and profile_data.profile.location.text.strip():
+        embed.add_field(name="Location", value=profile_data.profile.location.text)
+    embed.url = f"https://steamcommunity.com/profiles/{steam_id}"
+    await ctx.send(embed=embed)

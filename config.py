@@ -29,3 +29,7 @@ class Config:
     @property
     def logging_level(self):
         return getattr(logging, self.config["logging_level"])
+
+    @property
+    def steam_api_key(self):
+        return self.config["steam_api_key"]

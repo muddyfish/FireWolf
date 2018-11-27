@@ -7,3 +7,4 @@ web:
 db:
   url: "127.0.0.1"
 logging_level: DEBUG
+steam_api_key: "steam_webapi_key"

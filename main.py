@@ -33,7 +33,7 @@ class Main:
         self.log.debug("Starting DB")
         self.db = await Database.create(self.config.db)
         self.log.debug("Starting Discord Bot")
-        self.bot = await bot.initialise(self.config.discord, self.db)
+        self.bot = await bot.initialise(self.config.discord, self.config.steam_api_key, self.db)
         self.log.debug("Starting Oauth service")
         self.oauth = oauth2.Oauth2(self.bot, self.config.discord)
         self.log.debug("Starting Discord Bot")
