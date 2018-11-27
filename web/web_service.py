@@ -125,7 +125,8 @@ class WebService:
         else:
             log_channel_id = await self.bot.db.get_log_channel(member.guild.id)
             log_channel = self.bot.get_channel(log_channel_id)
-            await log_channel.send(f"{member} already has one of their integrations used")
+            if log_channel is not None:
+                await log_channel.send(f"{member} already has one of their integrations used")
             return aiohttp_jinja2.render_template("verify_success.jinja2",
                                                   request,
                                                   {"text": "Failure - One of your connections has already been used",
