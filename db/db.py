@@ -48,6 +48,8 @@ class Database:
         stmt = text("SELECT log_id FROM guild_data where guild_id=:guild_id;")
         res = await self.engine.execute(stmt, guild_id=guild_id)
         res = await res.fetchone()
+        if res is None:
+            return None
         return res[0]
 
     async def add_connections(self, member, connections):

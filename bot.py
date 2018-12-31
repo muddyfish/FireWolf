@@ -52,7 +52,10 @@ async def verify_member(member, role_id, add_on_authenticate, connections):
     guild = member.guild
     role = discord.utils.get(guild.roles, id=role_id)
     log_channel_id = await bot.db.get_log_channel(guild.id)
-    log_channel = bot.get_channel(log_channel_id)
+    if log_channel_id is None:
+        log_channel = None
+    else:
+        log_channel = bot.get_channel(log_channel_id)
     try:
         if add_on_authenticate:
             await member.add_roles(role, reason="Verified")
@@ -78,6 +81,8 @@ async def on_member_join(member):
     role_id, add_on_authenticate, require_steam = await bot.db.get_guild_settings(member.guild.id)
     if None in (role_id, add_on_authenticate, require_steam):
         log_channel_id = await bot.db.get_log_channel(member.guild.id)
+        if log_channel_id is None:
+            return
         log_channel = bot.get_channel(log_channel_id)
         await log_channel.send(f"Bot isn't set up yet. Cannot do anything to {member}")
         return
