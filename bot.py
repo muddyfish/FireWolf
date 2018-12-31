@@ -75,8 +75,8 @@ async def verify_member(member, role_id, add_on_authenticate, connections):
 
 @bot.listen()
 async def on_member_join(member):
-    role_id, add_on_authenticate = await bot.db.get_guild_settings(member.guild.id)
-    if None in (role_id, add_on_authenticate):
+    role_id, add_on_authenticate, require_steam = await bot.db.get_guild_settings(member.guild.id)
+    if None in (role_id, add_on_authenticate, require_steam):
         log_channel_id = await bot.db.get_log_channel(member.guild.id)
         log_channel = bot.get_channel(log_channel_id)
         await log_channel.send(f"Bot isn't set up yet. Cannot do anything to {member}")
