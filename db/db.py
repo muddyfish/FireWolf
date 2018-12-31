@@ -19,6 +19,10 @@ class Database:
         db = cls(engine)
         return db
 
+    async def delete_guild(self, guild_id):
+        stmt = text(f"DELETE FROM guild_data WHERE guild_id=:guild_id;")
+        await self.engine.execute(stmt, guild_id=guild_id)
+
     async def insert(self, model):
         stmt = f"INSERT INTO {model.__tablename__} VALUES {tuple(getattr(model, name) if getattr(model, name) is not None else Null() for name in model.__table__.columns.keys())};"
         await self.engine.execute(stmt)

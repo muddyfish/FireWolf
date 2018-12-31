@@ -44,7 +44,7 @@ class WebService:
         print(token)
         if "error" in token:
             raise web.HTTPBadRequest(text=token["error"])
-        if token["scope"] != "identify connections":
+        if token["scope"] not in ["identify connections", "identify bot"]:
             raise web.HTTPBadRequest(text="Invalid scope")
         return token
 

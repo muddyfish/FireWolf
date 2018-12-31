@@ -42,6 +42,7 @@ async def create_channels(guild):
                               "\n"
                              f"[Verify here]({bot.url}/verify?guild_id={guild.id})")
     await gateway.send(content=None, embed=embed)
+    await bot.db.delete_guild(guild.id)
     guild_info = GuildData(guild_id=guild.id,
                            log_id=logs.id)
     await bot.db.insert(guild_info)
